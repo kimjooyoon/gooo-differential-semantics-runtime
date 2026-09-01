@@ -1,0 +1,60 @@
+{
+  "schema": "gooo.semantics/v1",
+  "authority": "metacode",
+  "language": "Gooo",
+  "version": "0.1.0",
+  "types": ["int", "bool", "string"],
+  "grammar": {
+    "program": "program IDENT { statement* result expression; }",
+    "let": "let IDENT : TYPE = expression;",
+    "conditional": "if expression { block } else { block }",
+    "effect": "effect IDENT(expression);",
+    "expression": ["integer", "boolean", "string", "identifier", "pure_call"]
+  },
+  "expression_rules": {
+    "integer": {"type": "int"},
+    "boolean": {"type": "bool"},
+    "string": {"type": "string"},
+    "identifier": {"type": "bound-value"},
+    "conditional": {"condition": "bool", "branches": "same-result-type"},
+    "pure_call": {"must_be_declared": true, "effects_forbidden": true}
+  },
+  "pure_functions": {
+    "add": {"args": ["int", "int"], "returns": "int", "operation": "add"},
+    "not": {"args": ["bool"], "returns": "bool", "operation": "not"},
+    "is_positive": {"args": ["int"], "returns": "bool", "operation": "is_positive"},
+    "external_int": {"args": ["string"], "returns": "int", "operation": "external_int"},
+    "external_bool": {"args": ["string"], "returns": "bool", "operation": "external_bool"}
+  },
+  "effects": {
+    "emit": {"arg": "int", "trace": "emit"},
+    "audit": {"arg": "bool", "trace": "audit"}
+  },
+  "unknowns": {
+    "external-value": {
+      "stage": "evaluate",
+      "step": "resolve-external-value",
+      "reason": "external value is not determined",
+      "unknown_class": "undetermined-external-value",
+      "next_operation": "provide the named external value and replay",
+      "blocked_by": "missing-external-input"
+    },
+    "missing-effect-grant": {
+      "stage": "evaluate",
+      "step": "authorize-effect-call",
+      "reason": "effect grant is absent",
+      "unknown_class": "missing-effect-grant",
+      "next_operation": "grant the declared effect and replay",
+      "blocked_by": "effect-capability-boundary"
+    }
+  },
+  "generation": {
+    "target": "go1.27",
+    "binary_required": true,
+    "candidate_variants": ["none", "trace-divergence"]
+  },
+  "comparison": {
+    "fields": ["typed_value", "ordered_effect_trace", "terminal_explanation_digest"],
+    "status_precedence": ["REFUTED", "UNKNOWN", "CLOSED"]
+  }
+}

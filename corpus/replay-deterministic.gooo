@@ -1,0 +1,5 @@
+program replay_deterministic {
+  let answer: int = add(8, 4);
+  effect emit(answer);
+  result answer;
+}

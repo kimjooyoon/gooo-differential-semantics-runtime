@@ -1,0 +1,4 @@
+program normal_basic {
+  let answer: int = add(2, 3);
+  result answer;
+}

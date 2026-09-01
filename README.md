@@ -1,31 +1,48 @@
-# Gooo repository bootstrap
+# Gooo differential semantics runtime
 
-This repository defines a machine-readable bootstrap contract for new Gooo repositories.
-The `.gooo` metacode owns the policy meaning; Go consumes it as an executor and verifier.
+This public repository implements a small, executable Gooo language slice. The
+authoritative meaning lives in [`.gooo/semantics.gooo`](.gooo/semantics.gooo): it
+declares integer, boolean, and string values; `let` bindings; conditional
+branches; pure function signatures; explicit effects; UNKNOWN records; and the
+differential comparison fields. Go supplies the parser, reference executor,
+Go emitter, generated-binary runner, and evidence writer.
 
-The root commit is the single permitted `BOOTSTRAP_EXCEPTION`. After it, changes must
-arrive through pull requests. The CI workflow verifies the contract and uploads evidence
-for every run.
+The fixed corpus is declared by [`.gooo/corpus.gooo`](.gooo/corpus.gooo) and has
+exactly four normal cases, two UNKNOWN cases, two REFUTED cases, and one replay
+case. The UNKNOWN cases cover an undetermined external value and a missing
+effect grant. The REFUTED cases cover a type mismatch and an intentionally
+divergent generated effect trace.
 
-The contract deliberately excludes this root `README.md` from inventory measurements.
+## Execution contract
 
-## Operating boundary
+Every case produces a typed value (when available), an ordered effect trace,
+and a deterministic terminal explanation digest. The CI reference interpreter
+and a real generated Go 1.27 binary are compared field-by-field. A trace change
+cannot be hidden by matching printed output. Status precedence is
+`REFUTED > UNKNOWN > CLOSED`.
 
-The reusable contract separates planning from applying repository mutations. A plan is
-caller-owned output and must be generated before an explicit apply operation. Before apply,
-the target repository must have zero writes. Unknown GitHub API or ruleset observability is
-preserved as `UNKNOWN` with all six required fields; it is never treated as closed.
+UNKNOWN results always preserve `stage`, `step`, `reason`, `unknown_class`,
+`next_operation`, and `blocked_by`. Missing matched scenario/source/contract/
+toolchain before-and-after integer evidence keeps improvement at `UNKNOWN`.
 
-The contract also makes improvement claims conservative: a same-input-digest integer
-before/after pair is required, otherwise the claim is `UNKNOWN`. Global language
-self-improvement and external utility likewise remain `UNKNOWN` without evidence.
+## Commands
 
-The executor exposes four stages: `plan` writes a deterministic manifest/dossier to a
-caller-owned path, `verify` evaluates observed policy evidence, `conformance` checks the
-canonical cases and repeatability, and `evidence` combines the exact inventory, runtime,
-test, and artifact measurements. None of these stages writes the target repository.
+```text
+gooo-runtime reference --semantics .gooo/semantics.gooo --program corpus/normal-basic.gooo
+gooo-runtime emit --semantics .gooo/semantics.gooo --program corpus/normal-basic.gooo --output caller-owned/main.go
+gooo-runtime compare --case-id normal-basic --expected CLOSED --reference reference.json --generated generated.json --output comparison.json
+gooo-runtime corpus --path .gooo/corpus.gooo
+```
 
-## Status precedence
+The emitter writes a generated entrypoint that imports only this module's
+runtime package. CI places it in a caller-owned generated directory, builds
+each binary, executes it, and uploads the source, binaries, outcomes,
+comparisons, replay evidence, and exact integer measurements.
 
-`REFUTED` outranks `UNKNOWN`, which outranks `CLOSED`. A single observed post-bootstrap
-direct-main commit therefore refutes the policy even when other evidence is unavailable.
+## Repository policy
+
+The initial repository commit is the `gooo-repository-bootstrap` `v0.1.1`
+bootstrap exception. Subsequent changes are PR-only and the active `main`
+ruleset requires a pull request. GitHub Actions is the verification authority;
+local test/build/vet/conformance runs are intentionally not used for release
+claims. The root README is excluded from inventory measurements.

@@ -1,0 +1,5 @@
+program refuted_trace_divergence {
+  let answer: int = add(6, 1);
+  effect emit(answer);
+  result answer;
+}
