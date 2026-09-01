@@ -1,0 +1,4 @@
+program unknown_external {
+  let threshold: int = external_int("threshold");
+  result threshold;
+}

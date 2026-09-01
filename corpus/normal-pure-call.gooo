@@ -1,0 +1,5 @@
+program normal_pure_call {
+  let answer: int = add(4, 5);
+  effect emit(answer);
+  result answer;
+}

@@ -1,0 +1,4 @@
+program refuted_type_mismatch {
+  let bad: bool = 7;
+  result bad;
+}

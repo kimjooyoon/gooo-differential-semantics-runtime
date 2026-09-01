@@ -1,0 +1,8 @@
+program normal_boolean {
+  let enabled: bool = not(false);
+  if enabled {
+    result 7;
+  } else {
+    result 0;
+  }
+}

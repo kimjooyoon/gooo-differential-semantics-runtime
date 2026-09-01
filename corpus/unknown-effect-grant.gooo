@@ -1,0 +1,5 @@
+program unknown_effect_grant {
+  let answer: int = add(1, 2);
+  effect emit(answer);
+  result answer;
+}

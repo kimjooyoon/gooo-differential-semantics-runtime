@@ -1,0 +1,16 @@
+{
+  "schema": "gooo.corpus/v1",
+  "authority": "metacode",
+  "counts": {"normal": 4, "unknown": 2, "refuted": 2, "replay": 1},
+  "cases": [
+    {"id": "normal-basic", "program": "corpus/normal-basic.gooo", "expected_status": "CLOSED", "grants": [], "externals": {}, "candidate_variant": "none", "replay": false},
+    {"id": "normal-boolean", "program": "corpus/normal-boolean.gooo", "expected_status": "CLOSED", "grants": [], "externals": {}, "candidate_variant": "none", "replay": false},
+    {"id": "normal-pure-call", "program": "corpus/normal-pure-call.gooo", "expected_status": "CLOSED", "grants": ["emit"], "externals": {}, "candidate_variant": "none", "replay": false},
+    {"id": "normal-branch-effect", "program": "corpus/normal-branch-effect.gooo", "expected_status": "CLOSED", "grants": ["emit"], "externals": {}, "candidate_variant": "none", "replay": false},
+    {"id": "unknown-external", "program": "corpus/unknown-external.gooo", "expected_status": "UNKNOWN", "grants": [], "externals": {}, "candidate_variant": "none", "replay": false},
+    {"id": "unknown-effect-grant", "program": "corpus/unknown-effect-grant.gooo", "expected_status": "UNKNOWN", "grants": [], "externals": {}, "candidate_variant": "none", "replay": false},
+    {"id": "refuted-type-mismatch", "program": "corpus/refuted-type-mismatch.gooo", "expected_status": "REFUTED", "grants": [], "externals": {}, "candidate_variant": "none", "replay": false},
+    {"id": "refuted-trace-divergence", "program": "corpus/refuted-trace-divergence.gooo", "expected_status": "REFUTED", "grants": ["emit"], "externals": {}, "candidate_variant": "trace-divergence", "replay": false},
+    {"id": "replay-deterministic", "program": "corpus/replay-deterministic.gooo", "expected_status": "CLOSED", "grants": ["emit"], "externals": {}, "candidate_variant": "none", "replay": true}
+  ]
+}

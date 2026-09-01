@@ -1,0 +1,9 @@
+program normal_branch_effect {
+  let enabled: bool = is_positive(1);
+  if enabled {
+    effect emit(9);
+    result 9;
+  } else {
+    result 0;
+  }
+}
