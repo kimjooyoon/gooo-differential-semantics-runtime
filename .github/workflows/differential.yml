@@ -10,7 +10,7 @@ permissions:
   pull-requests: read
 
 env:
-  DIFF_ROOT: ${{ runner.temp }}/gooo-differential
+  DIFF_ROOT: gooo-differential
   SEMANTICS: .gooo/semantics.gooo
   CORPUS: .gooo/corpus.gooo
 
@@ -29,6 +29,8 @@ jobs:
       - name: Compile runtime and validate fixed corpus
         run: |
           set -euo pipefail
+          echo "DIFF_ROOT=$RUNNER_TEMP/gooo-differential" >> "$GITHUB_ENV"
+          export DIFF_ROOT="$RUNNER_TEMP/gooo-differential"
           mkdir -p "$DIFF_ROOT/artifacts/cases" "$DIFF_ROOT/generated" "$GITHUB_WORKSPACE/.ci-generated"
           /usr/bin/time -f '%e %M' -o "$DIFF_ROOT/compile.time" go test -run '^$' ./...
           go build -o "$DIFF_ROOT/gooo-runtime" ./cmd/gooo-runtime
