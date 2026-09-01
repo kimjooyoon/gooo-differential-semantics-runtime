@@ -132,12 +132,12 @@ jobs:
         if: always()
         run: |
           set -euo pipefail
-          mkdir -p "$DIFF_ROOT/artifacts/generated-go"
+          mkdir -p "$DIFF_ROOT/artifacts/generated-go/source" "$DIFF_ROOT/artifacts/generated-go/bin"
           if [ -d "$GITHUB_WORKSPACE/.ci-generated" ]; then
-            cp -R "$GITHUB_WORKSPACE/.ci-generated/." "$DIFF_ROOT/artifacts/generated-go/"
+            cp -R "$GITHUB_WORKSPACE/.ci-generated/." "$DIFF_ROOT/artifacts/generated-go/source/"
           fi
           if [ -d "$DIFF_ROOT/generated" ]; then
-            cp -R "$DIFF_ROOT/generated/." "$DIFF_ROOT/artifacts/generated-go/"
+            cp -R "$DIFF_ROOT/generated/." "$DIFF_ROOT/artifacts/generated-go/bin/"
           fi
           compile_ms=$(awk '{printf "%d", $1 * 1000 + 0.5}' "$DIFF_ROOT/compile.time" 2>/dev/null || echo 0)
           compile_rss=$(awk '{print $2}' "$DIFF_ROOT/compile.time" 2>/dev/null || echo 0)
