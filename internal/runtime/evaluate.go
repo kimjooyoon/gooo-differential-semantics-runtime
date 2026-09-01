@@ -44,8 +44,7 @@ func evaluate(program Program, semantics Semantics, options Options, variant str
 		outcome.Reason = "program did not produce a result"
 	} else {
 		outcome.Status = StatusClosed
-		copy := value
-		outcome.Value = &copy
+		outcome.Value = value
 	}
 	finalizeOutcome(&outcome)
 	return outcome
