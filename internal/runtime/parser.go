@@ -187,6 +187,15 @@ func (p *parser) parseProgram() (Program, error) {
 			return Program{}, err
 		}
 		body = append(body, statement)
+		if statement.Kind == "result" || statement.Kind == "if" {
+			next, err := p.peek()
+			if err != nil {
+				return Program{}, err
+			}
+			if next.kind != tokenSymbol || next.text != "}" {
+				return Program{}, fmt.Errorf("line %d, column %d: terminal statement must be final", next.line, next.col)
+			}
+		}
 	}
 	if _, err := p.expect(tokenSymbol, "}"); err != nil {
 		return Program{}, err
@@ -299,6 +308,15 @@ func (p *parser) parseBlock() (Block, error) {
 			return Block{}, err
 		}
 		statements = append(statements, statement)
+		if statement.Kind == "result" || statement.Kind == "if" {
+			next, err := p.peek()
+			if err != nil {
+				return Block{}, err
+			}
+			if next.kind != tokenSymbol || next.text != "}" {
+				return Block{}, fmt.Errorf("line %d, column %d: terminal statement must be final", next.line, next.col)
+			}
+		}
 	}
 	if _, err := p.expect(tokenSymbol, "}"); err != nil {
 		return Block{}, err
