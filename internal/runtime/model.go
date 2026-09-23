@@ -1,11 +1,13 @@
 package runtime
 
 import (
+	"bytes"
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"os"
 	"strconv"
 	"strings"
@@ -133,15 +135,29 @@ func LoadSemantics(path string) (Semantics, []byte, error) {
 
 func ParseSemantics(raw []byte) (Semantics, error) {
 	var semantics Semantics
-	decoder := json.NewDecoder(strings.NewReader(string(raw)))
-	decoder.DisallowUnknownFields()
-	if err := decoder.Decode(&semantics); err != nil {
-		return Semantics{}, fmt.Errorf("parse .gooo semantics: %w", err)
+	if err := decodeStrictJSON(raw, &semantics, ".gooo semantics"); err != nil {
+		return Semantics{}, err
 	}
 	if err := semantics.Validate(); err != nil {
 		return Semantics{}, err
 	}
 	return semantics, nil
+}
+
+func decodeStrictJSON(raw []byte, destination any, label string) error {
+	decoder := json.NewDecoder(bytes.NewReader(raw))
+	decoder.DisallowUnknownFields()
+	if err := decoder.Decode(destination); err != nil {
+		return fmt.Errorf("parse %s: %w", label, err)
+	}
+	var extra any
+	if err := decoder.Decode(&extra); !errors.Is(err, io.EOF) {
+		if err == nil {
+			return fmt.Errorf("parse %s: trailing JSON value", label)
+		}
+		return fmt.Errorf("parse %s: trailing data: %w", label, err)
+	}
+	return nil
 }
 
 func (s Semantics) Validate() error {

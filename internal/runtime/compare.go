@@ -1,7 +1,6 @@
 package runtime
 
 import (
-	"encoding/json"
 	"fmt"
 	"os"
 	"reflect"
@@ -29,7 +28,7 @@ func LoadOutcome(path string) (Outcome, error) {
 		return Outcome{}, err
 	}
 	var outcome Outcome
-	if err := json.Unmarshal(raw, &outcome); err != nil {
+	if err := decodeStrictJSON(raw, &outcome, "execution outcome"); err != nil {
 		return Outcome{}, err
 	}
 	if outcome.Schema != "gooo.execution/v1" || outcome.Status == "" || outcome.TerminalExplanationDigest == "" {

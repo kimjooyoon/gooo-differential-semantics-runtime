@@ -1,8 +1,6 @@
 package runtime
 
 import (
-	"bytes"
-	"encoding/json"
 	"fmt"
 	"os"
 )
@@ -30,10 +28,8 @@ func LoadCorpus(path string) (Corpus, error) {
 		return Corpus{}, err
 	}
 	var corpus Corpus
-	decoder := json.NewDecoder(bytes.NewReader(raw))
-	decoder.DisallowUnknownFields()
-	if err := decoder.Decode(&corpus); err != nil {
-		return Corpus{}, fmt.Errorf("parse corpus .gooo: %w", err)
+	if err := decodeStrictJSON(raw, &corpus, "corpus .gooo"); err != nil {
+		return Corpus{}, err
 	}
 	if err := corpus.Validate(); err != nil {
 		return Corpus{}, err
