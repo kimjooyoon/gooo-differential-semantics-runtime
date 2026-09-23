@@ -213,7 +213,11 @@ func ParseOptionsArgs(args []string) (Options, error) {
 			if index+1 >= len(args) || args[index+1] == "" {
 				return Options{}, errors.New("--grant requires an effect name")
 			}
-			options.Grants[args[index+1]] = true
+			grant := args[index+1]
+			if options.Grants[grant] {
+				return Options{}, fmt.Errorf("duplicate --grant %q", grant)
+			}
+			options.Grants[grant] = true
 			index++
 		case "--external":
 			if index+1 >= len(args) {
@@ -222,6 +226,9 @@ func ParseOptionsArgs(args []string) (Options, error) {
 			name, value, ok := strings.Cut(args[index+1], "=")
 			if !ok || name == "" {
 				return Options{}, errors.New("--external requires name=value")
+			}
+			if _, exists := options.Externals[name]; exists {
+				return Options{}, fmt.Errorf("duplicate --external %q", name)
 			}
 			parsed, err := parseExternalValue(value)
 			if err != nil {
